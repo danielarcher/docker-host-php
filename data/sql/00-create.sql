@@ -8,6 +8,12 @@ SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 DROP TABLE IF EXISTS `Containers`;
 CREATE TABLE `Containers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `hash` varchar(120) NULL,
+  `shortHash` varchar(120) NULL,
+  `name` varchar(120) NULL,
+  `image` varchar(120) NULL,
+  `memory` varchar(120) NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

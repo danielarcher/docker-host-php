@@ -2,19 +2,29 @@
 
 namespace DockerHost;
 
-class Container
+class Container 
 {
-    public $network;
+    public $id;
 
-    public function __construct($image, $memory, $name)
+    public $hash;
+
+    public $shortHash;
+
+    public $name;
+
+    public $image;
+
+    public $memory;
+
+    public $created;
+
+    public function toArray()
     {
-        $this->image = $image;
-        $this->memory = $memory;
-        $this->name = $name;
+        return array_filter((array) $this);
     }
 
-    public function addNetwork($network)
+    public function attachNetwork($host, $network)
     {
-        $this->network = $network;
+        ``
     }
 }

@@ -10,9 +10,8 @@ class Host
 
     public $name;
 
-    public function __construct($address)
+    public function __construct()
     {
-        $this->address = $address;
     }
 
     public function createNetwork($network)
@@ -40,5 +39,10 @@ class Host
     public function getIp($container)
     {
         return `docker -H {$this->address} inspect -f "{{ .NetworkSettings.IPAddress }}" {$container->name}`;
+    }
+
+    public function toArray()
+    {
+        return array_filter((array) $this);
     }
 }

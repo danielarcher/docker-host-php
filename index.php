@@ -3,34 +3,52 @@
 require 'vendor/autoload.php';
 
 use DockerHost\Container;
+use DockerHost\Database;
 use DockerHost\Host;
 use DockerHost\Manager;
 use DockerHost\User;
 
-$hosts = ['host1:2375', 'host2:2375'];
+$db = (new Database())->getConnection();
+
+$stmt = $db->prepare('SELECT * FROM Hosts');
+$stmt->execute();
+$hosts = $stmt->fetchAll(\PDO::FETCH_CLASS, Host::class);
+
 $images = ['php:7.2-apache', 'php:5.6-apache', 'mysql:5.6', 'alpine'];
 $plans = ['128M', '256M', '512M', '1G'];
 
+if (isset($_POST['action']) && $_POST['action'] == 'newContainer') {
+    
+    #$user = new User();
 
-if (isset($_POST['action']) && $_POST['action'] == 'new') {
-    $user = new User('daniel', 'my-credit-cart');
+    #$host = new Host();
+    #$domain = new Domain;
+    
 
-    $host = new Host($_POST['host']);
-    $container = new Container($_POST['image'], $_POST['plan'], $_POST['name']);
-    $manager = new Manager($user);
-    $manager->addContainer($container, $host);
+    $container = new Container();
+    $container->image = $_POST['image'];
+    $container->memory = $_POST['plan'];
+    $container->name = $_POST['name'];
+    $db->insert('Containers', $container->toArray());
+
+    #$manager = new Manager($db);
+    #$manager->bindNewContainer($host, $container, $user, $network);
+    #$manager->createContract($container, $user);
+    #$manager->bindProxyDomain($domain, $container);
 }
 
-if (isset($_GET['host'])) {
-    $host = new Host($_GET['host']);
-    $stats = $host->getStats();
+if ($_POST && $_POST['action'] == 'newHost') {
+    $host = new Host();
+    $host->address = $_POST['address'];
+    $host->name = $_POST['name'];
+    $db->insert('Hosts', $host->toArray());
 }
-echo '<pre>';
-#$stats = $host->getStats();
-#print_r($host2->getIp($container));
-#print_r($host2->getList());
-echo '</pre>';
 
+if ($_GET['host']) {
+    $stmt = $db->prepare('SELECT * FROM Hosts WHERE id = ?');
+    $stmt->execute($_GET['host']);
+    $selectedHost = $stmt->fetch(\PDO::FETCH_CLASS, Host::class);
+}
 ?>
 
 <!DOCTYPE html>
@@ -42,9 +60,18 @@ echo '</pre>';
         <h1>My Hosts</h1>
         <ul>
             <?php foreach ($hosts as $host): ?>
-                <li><a href="?host=<?php echo $host ?>"><?php echo $host ?></a></li>
+                <li><a href="?host=<?php echo $host->id ?>"><?php echo $host->name ?></a></li>
             <?php endforeach ?>
         </ul>
+        <fieldset>
+            <legend>New Host</legend>
+            <form method="post" action="">
+                <input type="hidden" name="action" value="newHost">
+                <p>Name: <input type="text" name="name"></p>
+                <p>Address: <input type="text" name="address"></p>
+                <p><input type="submit" value="Send"></p>
+            </form>
+        </fieldset>
 
         <?php if (isset($_GET['host'])): ?>
         <h1>My Containers</h1>
@@ -75,7 +102,7 @@ echo '</pre>';
             <legend>Novo Containers</legend>
             <form method="post" action="">
                 <input type="hidden" name="host" value="<?php echo $_GET['host'] ?>">
-                <input type="hidden" name="action" value="new">
+                <input type="hidden" name="action" value="newContainer">
                 <p>Name: <input type="text" name="name"></p>
                 <p>Image:
                     <select name="image">

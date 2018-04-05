@@ -1,4 +1,7 @@
 {
+	"require": {
+		"doctrine/dbal": "*"
+	},
     "autoload": {
         "psr-4": {"DockerHost\\": "src/"}
     }
