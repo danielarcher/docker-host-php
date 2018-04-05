@@ -8,15 +8,14 @@ SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 DROP TABLE IF EXISTS `Containers`;
 CREATE TABLE `Containers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `hash` varchar(120) NULL,
-  `shortHash` varchar(120) NULL,
-  `name` varchar(120) NULL,
-  `image` varchar(120) NULL,
-  `memory` varchar(120) NULL,
+  `hash` varchar(120) DEFAULT NULL,
+  `shortHash` varchar(120) DEFAULT NULL,
+  `name` varchar(120) DEFAULT NULL,
+  `image` varchar(120) DEFAULT NULL,
+  `memory` varchar(120) DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 DROP TABLE IF EXISTS `Hosts`;
 CREATE TABLE `Hosts` (
@@ -26,6 +25,9 @@ CREATE TABLE `Hosts` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `Hosts` (`id`, `address`, `name`) VALUES
+(1, 'host1:2375', 'Best First Host'),
+(2, 'host2:2375', 'Great Second Host');
 
 DROP TABLE IF EXISTS `Networks`;
 CREATE TABLE `Networks` (
@@ -41,4 +43,4 @@ CREATE TABLE `Users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2018-04-05 03:43:30
+-- 2018-04-05 12:23:08
