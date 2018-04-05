@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+
+  manager:
+    image: php:7.2-apache
+    hostname: manager.dockerhost.com
+    volume:
+      - ./:/var/www/public
+
+  mysql:
+    image: mysql
+    hostname: mysql.dockerhost.com
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+
+  adminer:
+    image: adminer
+    hostname: adminer.dockerhost.com
