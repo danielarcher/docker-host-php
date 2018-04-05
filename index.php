@@ -11,10 +11,6 @@ $hosts = ['host1:2375', 'host2:2375'];
 $images = ['php:7.2-apache', 'php:5.6-apache', 'mysql:5.6', 'alpine'];
 $plans = ['128M', '256M', '512M', '1G'];
 
-if (isset($_GET['host'])) {
-    $host = new Host('host1:2375');
-    $stats = $host->getStats();
-}
 
 if (isset($_POST['action']) && $_POST['action'] == 'new') {
     $user = new User('daniel', 'my-credit-cart');
@@ -25,6 +21,10 @@ if (isset($_POST['action']) && $_POST['action'] == 'new') {
     $manager->addContainer($container, $host);
 }
 
+if (isset($_GET['host'])) {
+    $host = new Host($_GET['host']);
+    $stats = $host->getStats();
+}
 echo '<pre>';
 #$stats = $host->getStats();
 #print_r($host2->getIp($container));
@@ -48,16 +48,28 @@ echo '</pre>';
 
         <?php if (isset($_GET['host'])): ?>
         <h1>My Containers</h1>
-        <pre>
-            <?php echo $stats ?>
-        </pre>
-        <table>
+        <table width="100%" border="1">
             <tr>
-                <th></th>
+                <th>Container</th>
+                <th>Memory</th>
+                <th>Net</th>
+                <th>Cpu</th>
+                <th>Actions</th>
             </tr>
+            <?php foreach ($stats as $container): ?>
             <tr>
-                <td></td>
+                <td><?php echo $container->containerName ?> (<?php echo $container->container ?>)</td>
+                <td><?php echo $container->memory->raw ?> (<?php echo $container->memory->percent ?>)</td>
+                <td><?php echo $container->netIo ?></td>
+                <td><?php echo $container->cpu ?></td>
+                <td>
+                    <a href="?host=<?php echo $_GET['host'] ?>&container=<?php echo $container->container ?>&action=start">Start</a>
+                    <a href="?host=<?php echo $_GET['host'] ?>&container=<?php echo $container->container ?>&action=stop">Stop</a>
+                    <a href="?host=<?php echo $_GET['host'] ?>&container=<?php echo $container->container ?>&action=destroy">Destroy</a>
+                </td>
             </tr>
+            <?php endforeach ?>
+                
         </table>
         <fieldset>
             <legend>Novo Containers</legend>
@@ -68,14 +80,14 @@ echo '</pre>';
                 <p>Image:
                     <select name="image">
                         <?php foreach ($images as $image): ?>
-                            <option value="image"><?php echo $image ?></option>
+                            <option value="<?php echo $image ?>"><?php echo $image ?></option>
                         <?php endforeach ?>
                     </select>
                 </p>
                 <p>Plan:
                     <select name="plan">
                         <?php foreach ($plans as $plan): ?>
-                            <option value="plan"><?php echo $plan ?></option>
+                            <option value="<?php echo $plan ?>"><?php echo $plan ?></option>
                         <?php endforeach ?>
                     </select>
                 </p>
