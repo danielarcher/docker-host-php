@@ -4,6 +4,12 @@ namespace DockerHost;
 
 class Host
 {
+    public $id;
+
+    public $address;
+
+    public $name;
+
     public function __construct($address)
     {
         $this->address = $address;
@@ -16,7 +22,7 @@ class Host
 
     public function addContainer($container)
     {
-        `docker -H {$this->address} run --name={$container->name} -d -m {$container->memory} --network={$container->network->name} {$container->image}`;
+        `docker -H {$this->address} run --name={$container->name} -t -d -m {$container->memory} --network={$container->network->name} {$container->image}`;
     }
 
     public function getStats()

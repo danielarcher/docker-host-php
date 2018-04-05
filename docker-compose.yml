@@ -5,7 +5,7 @@ services:
   manager:
     image: php:7.2-apache
     hostname: manager.dockerhost.com
-    volume:
+    volumes:
       - ./:/var/www/public
 
   mysql:
