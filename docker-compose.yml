@@ -2,17 +2,23 @@ version: '2'
 
 services:
 
-  manager:
-    image: php:7.2-apache
-    hostname: manager.dockerhost.com
-    volumes:
-      - ./:/var/www/public
+#  manager:
+#    build: .
+#    hostname: manager.dockerhost.com
+#    command: php -S 0.0.0.0:80 -t /app
+#    volumes:
+#      - ./:/app
 
   mysql:
     image: mysql
     hostname: mysql.dockerhost.com
+    volumes:
+      - ./data/sql:/docker-entrypoint-initdb.d
     environment:
-      MYSQL_ROOT_PASSWORD: example
+      - MYSQL_DATABASE=dockerhost
+      - MYSQL_USER=dockerhost
+      - MYSQL_PASSWORD=dockerhost
+      - MYSQL_ROOT_PASSWORD=Dock3rh0St
 
   adminer:
     image: adminer

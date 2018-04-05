@@ -12,10 +12,11 @@ class Manager
     public function bindNewContainer($host, $container, $user, $network)
     {
         $host->createNetwork($network);
-        $container->attachNetwork($host, $network);
-
-        $user->addContainer($container);
         $host->addContainer($container);
+        
+        $container->connectNetwork($host, $network);
+
+        #$user->addContainer($container);
     }
 
     public function createContract($container, $user)

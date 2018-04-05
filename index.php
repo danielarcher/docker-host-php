@@ -6,33 +6,35 @@ use DockerHost\Container;
 use DockerHost\Database;
 use DockerHost\Host;
 use DockerHost\Manager;
+use DockerHost\Network;
 use DockerHost\User;
 
 $db = (new Database())->getConnection();
-
-$stmt = $db->prepare('SELECT * FROM Hosts');
-$stmt->execute();
-$hosts = $stmt->fetchAll(\PDO::FETCH_CLASS, Host::class);
 
 $images = ['php:7.2-apache', 'php:5.6-apache', 'mysql:5.6', 'alpine'];
 $plans = ['128M', '256M', '512M', '1G'];
 
 if (isset($_POST['action']) && $_POST['action'] == 'newContainer') {
     
-    #$user = new User();
+    $user = new User();
+    $network = new Network();
+    $network->type = 'bridge';
+    $network->encryption = 'encrypted';
+    $network->name = 'my-random-network-'.mt_rand();
 
-    #$host = new Host();
+    # Get Host
+    $host = new Host($_POST['host']);
+
     #$domain = new Domain;
     
-
     $container = new Container();
     $container->image = $_POST['image'];
     $container->memory = $_POST['plan'];
-    $container->name = $_POST['name'];
+    $container->name = $_POST['name'] ?? 'my-random-container-'.mt_rand();
     $db->insert('Containers', $container->toArray());
 
-    #$manager = new Manager($db);
-    #$manager->bindNewContainer($host, $container, $user, $network);
+    $manager = new Manager($db);
+    $manager->bindNewContainer($host, $container, $user, $network);
     #$manager->createContract($container, $user);
     #$manager->bindProxyDomain($domain, $container);
 }
@@ -44,10 +46,28 @@ if ($_POST && $_POST['action'] == 'newHost') {
     $db->insert('Hosts', $host->toArray());
 }
 
+
+$stmt = $db->prepare('SELECT * FROM Hosts');
+$stmt->execute();
+$hosts = $stmt->fetchAll(\PDO::FETCH_CLASS, Host::class);
+
 if ($_GET['host']) {
-    $stmt = $db->prepare('SELECT * FROM Hosts WHERE id = ?');
-    $stmt->execute($_GET['host']);
-    $selectedHost = $stmt->fetch(\PDO::FETCH_CLASS, Host::class);
+    $selectedHost = new Host($_GET['host']);
+
+    if (isset($_GET['container'])) {
+        $containerHash = $_GET['container'];
+        if (isset($_GET['action']) && $_GET['action'] == 'start') {
+            $selectedHost->start($containerHash);
+        }
+        if (isset($_GET['action']) && $_GET['action'] == 'stop') {
+            $selectedHost->start($containerHash);
+        }
+        if (isset($_GET['action']) && $_GET['action'] == 'destroy') {
+            $selectedHost->start($containerHash);
+        }
+    }
+
+    $stats = $selectedHost->getStats();
 }
 ?>
 
@@ -101,7 +121,7 @@ if ($_GET['host']) {
         <fieldset>
             <legend>Novo Containers</legend>
             <form method="post" action="">
-                <input type="hidden" name="host" value="<?php echo $_GET['host'] ?>">
+                <input type="hidden" name="host" value="<?php echo $selectedHost->id ?>">
                 <input type="hidden" name="action" value="newContainer">
                 <p>Name: <input type="text" name="name"></p>
                 <p>Image:

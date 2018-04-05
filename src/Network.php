@@ -4,10 +4,11 @@ namespace DockerHost;
 
 class Network
 {
-    public function __construct($type, $encryption, $name)
-    {
-        $this->type = $type;
-        $this->encryption = $encryption;
-        $this->name = $name;
-    }
+	public $type;
+
+	public $encryption;
+
+	public $name;
+
+    public function __construct() {}
 }

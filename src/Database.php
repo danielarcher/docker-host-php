@@ -14,8 +14,8 @@ class Database
 
         $connectionParams = array(
             'dbname' => 'dockerhost',
-            'user' => 'root',
-            'password' => 'example',
+            'user' => 'dockerhost',
+            'password' => 'dockerhost',
             'host' => 'mysql.dockerhost.com',
             'driver' => 'pdo_mysql',
         );
